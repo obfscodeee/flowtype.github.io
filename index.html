@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="shadow">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111113">
+  <meta name="description" content="FlowType — минималистичный тренажёр слепой печати.">
+  <title>FlowType — Typing Test</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Lexend+Deca:wght@400;500;600&family=Roboto+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- ШАПКА -->
+    <header class="header">
+      <a href="#" class="logo" id="logo" aria-label="FlowType — главная">
+        <span>FlowType</span>
+      </a>
+
+      <nav class="header-nav" aria-label="Главная навигация">
+        <button
+          class="nav"
+          id="btnHistory"
+          type="button"
+          title="История результатов"
+          aria-label="История результатов"
+        >
+          <span aria-hidden="true">◷</span>
+        </button>
+
+        <button
+          class="nav"
+          id="btnSettings"
+          type="button"
+          title="Настройки"
+          aria-label="Настройки"
+        >
+          <span aria-hidden="true">⚙</span>
+        </button>
+      </nav>
+    </header>
+
+
+    <!-- ПАНЕЛЬ НАСТРОЕК ТЕСТА -->
+    <section class="config" id="config" aria-label="Настройки теста">
+
+      <div class="group" id="gExtra" aria-label="Дополнительные параметры">
+        <button type="button" data-x="punct" aria-pressed="false">
+          @ знаки
+        </button>
+
+        <button type="button" data-x="nums" aria-pressed="false">
+          # числа
+        </button>
+      </div>
+
+      <div class="group" id="gMode" aria-label="Режим теста">
+        <button type="button" data-mode="time" aria-pressed="true">
+          ◷ время
+        </button>
+
+        <button type="button" data-mode="words" aria-pressed="false">
+          A слова
+        </button>
+
+        <button type="button" data-mode="quote" aria-pressed="false">
+          ❝ цитата
+        </button>
+      </div>
+
+      <div class="group" id="gValue" aria-label="Длительность или количество">
+        <button type="button" data-v="5">5</button>
+        <button type="button" data-v="15">15</button>
+        <button type="button" data-v="30" class="active">30</button>
+        <button type="button" data-v="60">60</button>
+        <button type="button" data-v="120">120</button>
+      </div>
+
+    </section>
+
+
+    <!-- ОСНОВНОЙ ЭКРАН ПЕЧАТИ -->
+    <main id="testView">
+
+      <div class="test-toolbar">
+        <button
+          class="lang"
+          id="langBtn"
+          type="button"
+          title="Сменить язык"
+        >
+          <span aria-hidden="true">◎</span>
+          <span id="langName">Русский</span>
+        </button>
+
+        <div id="live" class="live-stats" aria-live="polite"></div>
+      </div>
+
+      <section
+        id="wordsWrap"
+        class="words-wrap"
+        aria-label="Текст для печати"
+      >
+        <div id="words" class="words">
+          <div id="caret" class="caret"></div>
+        </div>
+      </section>
+
+      <!-- Скрытое поле для мобильной клавиатуры -->
+      <textarea
+        id="inputField"
+        class="input-field"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        aria-label="Ввод текста для теста"
+        tabindex="-1"
+      ></textarea>
+
+      <div class="test-actions">
+        <button
+          id="restart"
+          class="restart"
+          type="button"
+          title="Перезапустить тест (Tab)"
+          aria-label="Перезапустить тест"
+        >
+          ↻
+        </button>
+      </div>
+
+      <div class="hints">
+        <div>
+          <kbd>tab</kbd>
+          <span id="h1">перезапуск</span>
+        </div>
+
+        <div>
+          <kbd>esc</kbd>
+          <span id="h2">настройки</span>
+        </div>
+      </div>
+
+    </main>
+
+
+    <!-- ЭКРАН РЕЗУЛЬТАТОВ -->
+    <main id="resultView" hidden>
+
+      <section class="res">
+
+        <div class="big">
+          <div class="result-item">
+            <span class="lbl">wpm</span>
+            <span class="v" id="rWpm">0</span>
+          </div>
+
+          <div class="result-item">
+            <span class="lbl">acc</span>
+            <span class="v" id="rAcc">0%</span>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <div class="chart-heading">
+            <span>Скорость печати</span>
+            <span class="chart-unit">WPM</span>
+          </div>
+
+          <svg
+            id="chart"
+            viewBox="0 0 500 160"
+            preserveAspectRatio="none"
+            role="img"
+            aria-label="График скорости печати во время теста"
+          >
+            <text x="250" y="80" text-anchor="middle">
+              Результаты появятся после теста
+            </text>
+          </svg>
+        </div>
+
+      </section>
+
+      <div class="meta" id="rMeta"></div>
+
+      <section class="history-section">
+        <h2 class="section-title">История результатов</h2>
+        <ul id="historyList" class="history-list"></ul>
+      </section>
+
+      <div class="row result-actions">
+        <button
+          id="btnAgain"
+          type="button"
+          title="Пройти тест снова (Tab)"
+          aria-label="Пройти тест снова"
+        >
+          ↻
+        </button>
+
+        <button
+          class="link"
+          id="btnClear"
+          type="button"
+        >
+          очистить историю
+        </button>
+      </div>
+
+    </main>
+
+
+    <!-- ПОДВАЛ -->
+    <footer class="footer">
+
+      <div class="fl">
+        <button class="nav" id="fHist" type="button">
+          история
+        </button>
+
+        <button class="nav" id="fSet" type="button">
+          настройки
+        </button>
+      </div>
+
+      <div class="fr">
+        <button
+          class="nav"
+          id="fTheme"
+          type="button"
+          title="Сменить тему"
+        >
+          ◐ тема
+        </button>
+
+        <span class="version">v1.0</span>
+      </div>
+
+    </footer>
+
+  </div>
+
+
+  <!-- МОДАЛЬНОЕ ОКНО НАСТРОЕК -->
+  <div
+    class="modal"
+    id="settings"
+    hidden
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="tSettings"
+  >
+    <div class="panel">
+
+      <div class="panel-header">
+        <h2 id="tSettings">Настройки</h2>
+
+        <button
+          id="btnClose"
+          class="modal-close"
+          type="button"
+          aria-label="Закрыть настройки"
+        >
+          ×
+        </button>
+      </div>
+
+
+      <!-- ТЕМА -->
+      <label class="setting-row">
+        <span id="tTheme">Тема</span>
+
+        <div class="seg" id="themeSwitch">
+          <button type="button" data-theme="light">
+            Светлая
+          </button>
+
+          <button type="button" data-theme="shadow" class="active">
+            Тёмная
+          </button>
+
+          <button type="button" data-theme="ocean">
+            Океан
+          </button>
+        </div>
+      </label>
+
+
+      <!-- ШРИФТ -->
+      <label class="setting-row" for="fontSelect">
+        <span id="tFont">Шрифт</span>
+
+        <select id="fontSelect">
+          <option value="'Comfortaa'">Comfortaa</option>
+          <option value="'Roboto Mono'">Roboto Mono</option>
+          <option value="'JetBrains Mono'">JetBrains Mono</option>
+          <option value="'Fira Code'">Fira Code</option>
+          <option value="'Lexend Deca'">Lexend Deca</option>
+        </select>
+      </label>
+
+
+      <!-- ЗВУК ПЕЧАТИ -->
+      <label class="setting-row" for="soundSelect">
+        <span id="tSound">Звук ввода</span>
+
+        <select id="soundSelect">
+          <option value="off">Выключен</option>
+          <option value="lofi">Lo-Fi Soft Tap</option>
+          <option value="wood">Wooden Block</option>
+          <option value="click">Mechanical Click</option>
+          <option value="retro">Retro Arcade</option>
+          <option value="typewriter">Typewriter</option>
+          <option value="bubble">Bubble</option>
+          <option value="soft">Soft Keyboard</option>
+          <option value="pop">Pop</option>
+          <option value="beep">Digital Beep</option>
+          <option value="marimba">Marimba</option>
+          <option value="glass">Glass Tap</option>
+        </select>
+      </label>
+
+
+      <!-- ЗВУК ОШИБОК -->
+      <label class="setting-row" for="soundErrSelect">
+        <span id="tSoundErr">Звук ошибок</span>
+
+        <select id="soundErrSelect">
+          <option value="off">Выключен</option>
+          <option value="thump">Lo-Fi Thump</option>
+          <option value="beep">Sharp Beep</option>
+          <option value="pop">Soft Pop</option>
+          <option value="double">Double Beep</option>
+          <option value="low">Low Tone</option>
+          <option value="wood">Wood Knock</option>
+        </select>
+      </label>
+
+
+      <button class="btn" id="btnCloseBottom" type="button">
+        Готово
+      </button>
+
+    </div>
+  </div>
+
+
+  <!-- УВЕДОМЛЕНИЯ -->
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+    hidden
+  ></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
